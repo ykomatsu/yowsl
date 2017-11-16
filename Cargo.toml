@@ -6,6 +6,6 @@ description = "Yet another Windows Subsystem for Linux tweaker"
 license = "Apache-2.0"
 
 [dependencies]
+bitflags = "1.0.1"
 clap = "2.27.1"
-lazy_static = "0.2.10"
 libloading = "0.4.2"
