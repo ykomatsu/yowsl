@@ -1,65 +1,93 @@
-use std::process;
+use std::{env, fs, process};
+use std::path::Path;
+use std::process::Command;
 use super::clap::{App, Arg, ArgMatches, SubCommand};
 use yowsl::{DistroFlags, Wslapi};
 
 fn run_register(wslapi: Wslapi, matches: &ArgMatches) {
-    let distro_name = matches.value_of("DISTRO_NAME").unwrap();
+    let name = matches.value_of("NAME").unwrap();
     let src = matches.value_of("src").unwrap();
-    // let dest = matches.value_of("dest").unwrap();
-    // Use CreateHardLink!
-    let hresult = wslapi.register_distro(distro_name, src);
-    if hresult != 0 {
-        eprintln!("Error: HRESULT = 0x{:08X}", hresult);
+    let dest = matches.value_of("dest").unwrap();
+    let current_exe = env::current_exe().unwrap();
+    if Path::new(src).is_file() == false {
+        eprintln!("Error: \"{}\" is not exists", src);
         process::exit(1)
+    }
+    if Path::new(dest).is_dir() == false {
+        eprintln!("Error: \"{}\" is not exists", dest);
+        process::exit(1)
+    }
+    if current_exe.as_path().parent().unwrap() == Path::new(dest) {
+        let hresult = wslapi.register_distro(name, src);
+        if hresult != 0 {
+            eprintln!("Error: HRESULT = {:#08X}", hresult);
+            process::exit(1)
+        }
+    } else {
+        let new_exe = Path::new(dest).join(current_exe.file_name().unwrap());
+        match fs::hard_link(current_exe.as_path(), &new_exe) {
+            Ok(()) => (),
+            Err(_) => {
+                eprintln!("Error: hard_link failed");
+                process::exit(1)
+            }
+        }
+        Command::new(&new_exe)
+            .args(env::args().skip(1))
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap();
+        fs::remove_file(&new_exe).unwrap();
     }
 }
 
 fn run_unregister(wslapi: Wslapi, matches: &ArgMatches) {
-    let distro_name = matches.value_of("DISTRO_NAME").unwrap();
-    let hresult = wslapi.unregister_distro(distro_name);
+    let name = matches.value_of("NAME").unwrap();
+    let hresult = wslapi.unregister_distro(name);
     if hresult != 0 {
-        eprintln!("Error: HRESULT = 0x{:08X}", hresult);
+        eprintln!("Error: HRESULT = {:#08X}", hresult);
         process::exit(1)
     }
 }
 
 fn run_get_configuration(wslapi: Wslapi, matches: &ArgMatches) {
-    let distro_name = matches.value_of("DISTRO_NAME").unwrap();
-    let (hresult, distro_configuration) = wslapi.get_distro_configuration(distro_name);
+    let name = matches.value_of("NAME").unwrap();
+    let (hresult, distro_configuration) = wslapi.get_distro_configuration(name);
     if hresult == 0 {
         println!("{}", distro_configuration.to_toml());
     } else {
-        eprintln!("Error: HRESULT = 0x{:08X}", hresult);
+        eprintln!("Error: HRESULT = {:#08X}", hresult);
         process::exit(1)
     }
 }
 
 fn run_set_configuration(wslapi: Wslapi, matches: &ArgMatches) {
-    let distro_name = matches.value_of("DISTRO_NAME").unwrap();
-    let default_uid = matches.value_of("default_uid").unwrap();
-    let default_uid = default_uid.parse().unwrap();
-    let distro_flags = matches.value_of("distro_flags").unwrap();
-    let distro_flags = DistroFlags::from_bits(distro_flags.parse().unwrap()).unwrap();
-    let hresult = wslapi.configure_distro(distro_name, default_uid, distro_flags);
+    let name = matches.value_of("NAME").unwrap();
+    let default_uid = matches.value_of("default_uid").unwrap().parse().unwrap();
+    let flags = DistroFlags::from_bits(
+        u32::from_str_radix(matches.value_of("flags").unwrap(), 2).unwrap(),
+    ).unwrap();
+    let hresult = wslapi.configure_distro(name, default_uid, flags);
     if hresult != 0 {
-        eprintln!("Error: HRESULT = 0x{:8X}", hresult);
+        eprintln!("Error: HRESULT = {:#08X}", hresult);
         process::exit(1)
     }
 }
 
-fn u32_validator(s: String) -> Result<(), String> {
-    if let Ok(_) = s.parse::<u32>() {
-        Ok(())
-    } else {
-        Err("u32 is expected".to_string())
-    }
-}
-
-fn u64_validator(s: String) -> Result<(), String> {
+fn default_uid_validator(s: String) -> Result<(), String> {
     if let Ok(_) = s.parse::<u64>() {
         Ok(())
     } else {
-        Err("u64 is expected".to_string())
+        Err("A 64-bit unsigned integer is expected".to_string())
+    }
+}
+
+fn flags_validator(s: String) -> Result<(), String> {
+    if s.len() == 3 && s.chars().all(|c| c == '0' || c == '1') {
+        Ok(())
+    } else {
+        Err("3 binary digits are expected".to_string())
     }
 }
 
@@ -72,7 +100,7 @@ pub fn run() {
             SubCommand::with_name("register")
                 .about("Registers a WSL distro")
                 .arg(
-                    Arg::with_name("DISTRO_NAME")
+                    Arg::with_name("NAME")
                         .help("A WSL distro name to register")
                         .required(true),
                 )
@@ -99,7 +127,7 @@ pub fn run() {
             SubCommand::with_name("unregister")
                 .about("Unregisters a WSL distro")
                 .arg(
-                    Arg::with_name("DISTRO_NAME")
+                    Arg::with_name("NAME")
                         .help("A WSL distro name to unregister")
                         .required(true),
                 ),
@@ -108,7 +136,7 @@ pub fn run() {
             SubCommand::with_name("get-configuration")
                 .about("Get the configuration of a WSL distro")
                 .arg(
-                    Arg::with_name("DISTRO_NAME")
+                    Arg::with_name("NAME")
                         .help("A WSL distro name to get the configuration")
                         .required(true),
                 ),
@@ -117,7 +145,7 @@ pub fn run() {
             SubCommand::with_name("set-configuration")
                 .about("Set the configuration of a WSL distro")
                 .arg(
-                    Arg::with_name("DISTRO_NAME")
+                    Arg::with_name("NAME")
                         .help("A WSL distro name to set the configuration")
                         .required(true),
                 )
@@ -128,17 +156,17 @@ pub fn run() {
                         .value_name("DEFAULT_UID")
                         .help("The default Linux user ID for this WSL distro")
                         .takes_value(true)
-                        .validator(u64_validator)
+                        .validator(default_uid_validator)
                         .required(true),
                 )
                 .arg(
-                    Arg::with_name("distro_flags")
+                    Arg::with_name("flags")
                         .short("f")
-                        .long("distro-flags")
-                        .value_name("DISTRO_FLAGS")
+                        .long("flags")
+                        .value_name("FLAGS")
                         .help("Flags for this WSL distro")
                         .takes_value(true)
-                        .validator(u32_validator)
+                        .validator(flags_validator)
                         .required(true),
                 ),
         )

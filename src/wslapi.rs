@@ -47,7 +47,7 @@ impl<'a> DistroConfiguration<'a> {
             "[{}]
 version = {}
 default_uid = {}
-distro_flags = 0b{:03b}",
+distro_flags = {:#3b}",
             self.name,
             self.version,
             self.default_uid,
