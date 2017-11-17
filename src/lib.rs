@@ -3,6 +3,7 @@
 #[macro_use]
 extern crate bitflags;
 extern crate libloading;
+extern crate ole32;
 
 pub mod wslapi;
 

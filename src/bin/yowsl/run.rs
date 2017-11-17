@@ -5,7 +5,7 @@ use yowsl::{DistroFlags, Wslapi};
 fn run_register(wslapi: Wslapi, matches: &ArgMatches) {
     let distro_name = matches.value_of("DISTRO_NAME").unwrap();
     let src = matches.value_of("src").unwrap();
-    let dest = matches.value_of("dest").unwrap();
+    // let dest = matches.value_of("dest").unwrap();
     // Use CreateHardLink!
     let hresult = wslapi.register_distro(distro_name, src);
     if hresult != 0 {
@@ -27,17 +27,7 @@ fn run_get_configuration(wslapi: Wslapi, matches: &ArgMatches) {
     let distro_name = matches.value_of("DISTRO_NAME").unwrap();
     let (hresult, distro_configuration) = wslapi.get_distro_configuration(distro_name);
     if hresult == 0 {
-        println!(
-            "[{}]
-version = {}
-default_uid = {}
-distro_flags = 0b{:04b}
-# distro_environment_variables",
-            distro_name,
-            distro_configuration.version,
-            distro_configuration.default_uid,
-            distro_configuration.distro_flags
-        );
+        println!("{}", distro_configuration.to_toml());
     } else {
         eprintln!("Error: HRESULT = 0x{:08X}", hresult);
         process::exit(1)
@@ -47,7 +37,7 @@ distro_flags = 0b{:04b}
 fn run_set_configuration(wslapi: Wslapi, matches: &ArgMatches) {
     let distro_name = matches.value_of("DISTRO_NAME").unwrap();
     let default_uid = matches.value_of("default_uid").unwrap();
-    let default_uid: u64 = default_uid.parse().unwrap();
+    let default_uid = default_uid.parse().unwrap();
     let distro_flags = matches.value_of("distro_flags").unwrap();
     let distro_flags = DistroFlags::from_bits(distro_flags.parse().unwrap()).unwrap();
     let hresult = wslapi.configure_distro(distro_name, default_uid, distro_flags);
