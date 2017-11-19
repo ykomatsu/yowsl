@@ -11,17 +11,15 @@ Yet another Windows Subsystem for Linux tweaker.
 * Get the configuration of a registered WSL distro
 * Set the configuration of a registered WSL distro
 
-## Building
+## Installation
 
-```
-$ cargo build --release
-```
+You can download pre-built binaries from [the downloads page](https://bitbucket.org/ykomatsu/yowsl/downloads/).
 
 ## Running
 
 ```
 > # To register:
-> New-Item -Path . -Name MyUbuntu -ItemType Directory
+> New-Item -Name MyUbuntu -ItemType Directory
 > yowsl.exe register MyUbuntu -s install.tar.gz -d MyUbuntu
 > wslconfig.exe /setdefault MyUbuntu
 ```
