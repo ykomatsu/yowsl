@@ -27,7 +27,7 @@ $ cargo build --release
 ```
 
 ```
-> # To get the configuration
+> # To get the configuration:
 > yowsl.exe get-configuration MyUbuntu
 [MyUbuntu]
 version = 1
@@ -36,7 +36,7 @@ distro_flags = 7 # 0b111
 ```
 
 ```
-> # To set the configuration
+> # To set the configuration:
 > yowsl.exe set-configuration MyUbuntu -u 1000 -f 111
 ```
 
