@@ -8,5 +8,7 @@ license = "Apache-2.0"
 [dependencies]
 bitflags = "1.0.1"
 clap = "2.27.1"
+failure = "0.1.0"
+failure_derive = "0.1.0"
 libloading = "0.4.2"
 ole32-sys = "0.2.0"

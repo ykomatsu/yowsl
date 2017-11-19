@@ -1,7 +1,7 @@
-use std::{env, fs, process};
+use std::{env, fs};
 use std::path::Path;
 use std::process::Command;
-use super::clap::{App, Arg, ArgMatches, SubCommand};
+use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 use yowsl::{DistroFlags, Wslapi};
 
 fn run_register(wslapi: Wslapi, matches: &ArgMatches) {
@@ -10,26 +10,33 @@ fn run_register(wslapi: Wslapi, matches: &ArgMatches) {
     let dest = matches.value_of("dest").unwrap();
     let current_exe = env::current_exe().unwrap();
     if Path::new(src).is_file() == false {
-        eprintln!("Error: \"{}\" is not exists", src);
-        process::exit(1)
+        eprintln!("Error: \"{}\" does not exist", src);
+        return;
     }
     if Path::new(dest).is_dir() == false {
-        eprintln!("Error: \"{}\" is not exists", dest);
-        process::exit(1)
+        eprintln!("Error: \"{}\" does not exist", dest);
+        return;
     }
-    if current_exe.as_path().parent().unwrap() == Path::new(dest) {
-        let hresult = wslapi.register_distro(name, src);
-        if hresult != 0 {
-            eprintln!("Error: HRESULT = {:#08X}", hresult);
-            process::exit(1)
+    let src = fs::canonicalize(Path::new(src)).unwrap();
+    let dest = fs::canonicalize(Path::new(dest)).unwrap();
+    if current_exe.as_path().parent().unwrap() == dest {
+        match wslapi.register_distro(name, src.to_str().unwrap()) {
+            Ok(()) => {}
+            Err(e) => {
+                eprintln!("Error: {}", e);
+                return;
+            }
         }
     } else {
-        let new_exe = Path::new(dest).join(current_exe.file_name().unwrap());
+        let new_exe = dest.join(current_exe.file_name().unwrap());
         match fs::hard_link(current_exe.as_path(), &new_exe) {
             Ok(()) => (),
             Err(_) => {
-                eprintln!("Error: hard_link failed");
-                process::exit(1)
+                eprintln!(
+                    "Error: I cannot create a hard link to \"{}\".",
+                    dest.to_str().unwrap()
+                );
+                return;
             }
         }
         Command::new(&new_exe)
@@ -38,27 +45,28 @@ fn run_register(wslapi: Wslapi, matches: &ArgMatches) {
             .unwrap()
             .wait()
             .unwrap();
-        fs::remove_file(&new_exe).unwrap();
     }
 }
 
 fn run_unregister(wslapi: Wslapi, matches: &ArgMatches) {
     let name = matches.value_of("NAME").unwrap();
-    let hresult = wslapi.unregister_distro(name);
-    if hresult != 0 {
-        eprintln!("Error: HRESULT = {:#08X}", hresult);
-        process::exit(1)
+    match wslapi.unregister_distro(name) {
+        Ok(()) => {}
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            return;
+        }
     }
 }
 
 fn run_get_configuration(wslapi: Wslapi, matches: &ArgMatches) {
     let name = matches.value_of("NAME").unwrap();
-    let (hresult, distro_configuration) = wslapi.get_distro_configuration(name);
-    if hresult == 0 {
-        println!("{}", distro_configuration.to_toml());
-    } else {
-        eprintln!("Error: HRESULT = {:#08X}", hresult);
-        process::exit(1)
+    match wslapi.get_distro_configuration(name) {
+        Ok(distro_configuration) => println!("{}", distro_configuration.to_toml()),
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            return;
+        }
     }
 }
 
@@ -68,10 +76,12 @@ fn run_set_configuration(wslapi: Wslapi, matches: &ArgMatches) {
     let flags = DistroFlags::from_bits(
         u32::from_str_radix(matches.value_of("flags").unwrap(), 2).unwrap(),
     ).unwrap();
-    let hresult = wslapi.configure_distro(name, default_uid, flags);
-    if hresult != 0 {
-        eprintln!("Error: HRESULT = {:#08X}", hresult);
-        process::exit(1)
+    match wslapi.configure_distro(name, default_uid, flags) {
+        Ok(()) => {}
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            return;
+        }
     }
 }
 
@@ -96,6 +106,10 @@ pub fn run() {
         .version(crate_version!())
         .author(crate_authors!())
         .about("Yet another Windows Subsystem for Linux tweaker")
+        .global_settings(&[
+            AppSettings::ArgRequiredElseHelp,
+            AppSettings::DeriveDisplayOrder,
+        ])
         .subcommand(
             SubCommand::with_name("register")
                 .about("Registers a WSL distro")
@@ -171,7 +185,13 @@ pub fn run() {
                 ),
         )
         .get_matches();
-    let wslapi = Wslapi::new();
+    let wslapi = match Wslapi::new() {
+        Ok(wslapi) => wslapi,
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            return;
+        }
+    };
     if let Some(sub_matches) = matches.subcommand_matches("register") {
         run_register(wslapi, sub_matches);
     } else if let Some(sub_matches) = matches.subcommand_matches("unregister") {

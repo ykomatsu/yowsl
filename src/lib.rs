@@ -2,9 +2,12 @@
 
 #[macro_use]
 extern crate bitflags;
+#[macro_use]
+extern crate failure;
 extern crate libloading;
 extern crate ole32;
 
+pub mod wide_chars;
 pub mod wslapi;
 
 pub use wslapi::{DistroFlags, Wslapi};
