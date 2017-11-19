@@ -21,7 +21,7 @@ $ cargo build --release
 
 ```
 > # To register:
-> New-Item MyUbuntu
+> New-Item -Path . -Name MyUbuntu -ItemType Directory
 > yowsl.exe register MyUbuntu -s install.tar.gz -d MyUbuntu
 > wslconfig.exe /setdefault MyUbuntu
 ```
