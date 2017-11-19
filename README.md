@@ -2,93 +2,47 @@
 
 Yet another Windows Subsystem for Linux tweaker.
 
-**This project is in the very early stage of development.**
+**This project is in the very very early stage of development.**
+
+## Features
+
+* Register a WSL distro from a `.tar.gz` file
+* Unregister a WSL distro
+* Get the configuration of a registered WSL distro
+* Set the configuration of a registered WSL distro
 
 ## Building
 
 ```
-cargo build --release
+$ cargo build --release
 ```
 
 ## Running
 
-To register a WSL distro:
-
-**Warning: YoWSL cannot choose a directory for `rootfs` yet.**
-**It always creates `rootfs` in a directory where `yowsl.exe` exists.**
-
 ```
-yowsl.exe-register
-Registers a WSL distro
-
-USAGE:
-    yowsl.exe register <DISTRO_NAME> --src <SOURCE>
-
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
-OPTIONS:
-    -d, --dest <DESTINATION>    A destination directory
-    -s, --src <SOURCE>          A source .tar.gz file
-
-ARGS:
-    <DISTRO_NAME>    A WSL distro name to register
+> # To register:
+> New-Item MyUbuntu
+> yowsl.exe register MyUbuntu -s install.tar.gz -d MyUbuntu
+> wslconfig.exe /setdefault MyUbuntu
 ```
 
-To unregister a WSL distro:
-
 ```
-yowsl.exe-unregister
-Unregisters a WSL distro
-
-USAGE:
-    yowsl.exe unregister <DISTRO_NAME>
-
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
-ARGS:
-    <DISTRO_NAME>    A WSL distro name to unregister
+> # To get the configuration
+> yowsl.exe get-configuration MyUbuntu
+[MyUbuntu]
+version = 1
+default_uid = 0
+distro_flags = 7 # 0b111
 ```
 
-To get the configuration of a WSL distro:
-
 ```
-yowsl.exe-get-configuration
-Get the configuration of a WSL distro
-
-USAGE:
-    yowsl.exe get-configuration <DISTRO_NAME>
-
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
-ARGS:
-    <DISTRO_NAME>    A WSL distro name to get the configuration
+> # To set the configuration
+> yowsl.exe set-configuration MyUbuntu -u 1000 -f 111
 ```
 
-To set the configuration of a WSL distro:
-
 ```
-yowsl.exe-set-configuration
-Set the configuration of a WSL distro
-
-USAGE:
-    yowsl.exe set-configuration <DISTRO_NAME> --default-uid <DEFAULT_UID> --distro-flags <DISTRO_FLAGS>
-
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
-OPTIONS:
-    -u, --default-uid <DEFAULT_UID>      The default Linux user ID for this WSL distro
-    -f, --distro-flags <DISTRO_FLAGS>    Flags for this WSL distro
-
-ARGS:
-    <DISTRO_NAME>    A WSL distro name to set the configuration
+> # To unregister:
+> yowsl.exe unregister MyUbuntu
 ```
 
 ## License
