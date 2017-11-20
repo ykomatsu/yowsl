@@ -84,6 +84,7 @@ impl Wslapi {
         })
     }
 
+    #[allow(dead_code)]
     fn raw_co_task_mem_free(&self, v: LPVOID) -> LibloadingResult<()> {
         unsafe {
             let raw_fn: Symbol<CoTaskMemFreeFn> = self.ole32.get(b"CoTaskMemFree")?;

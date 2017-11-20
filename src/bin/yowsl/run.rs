@@ -93,7 +93,7 @@ fn run_launch(wslapi: &Wslapi, matches: &ArgMatches) {
     };
     let use_cwd = matches.is_present("use_cwd");
     match wslapi.launch(name, command, use_cwd) {
-        Ok(_) => {},
+        Ok(_) => {}
         Err(e) => {
             eprintln!("Error: {}", e);
             return;
@@ -101,7 +101,7 @@ fn run_launch(wslapi: &Wslapi, matches: &ArgMatches) {
     };
 }
 
-#[allow(needless_pass_by_value)]
+#[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
 fn default_uid_validator(s: String) -> Result<(), String> {
     if s.parse::<u64>().is_ok() {
         Ok(())
@@ -110,7 +110,7 @@ fn default_uid_validator(s: String) -> Result<(), String> {
     }
 }
 
-#[allow(needless_pass_by_value)]
+#[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
 fn flags_validator(s: String) -> Result<(), String> {
     if s.len() == 3 && s.chars().all(|c| c == '0' || c == '1') {
         Ok(())
@@ -132,23 +132,19 @@ pub fn run() {
             SubCommand::with_name("register")
                 .about("Registers a WSL distro")
                 .usage("yowsl.exe register [FLAGS] <NAME> -s <source> -d <destination>")
-                .arg(
-                    Arg::from_usage("<NAME> 'A WSL distro name to register'")
-                )
-                .arg(
-                    Arg::from_usage("<src> -s, --src <source> 'A source .tar.gz file'")
-                )
-                .arg(
-                    Arg::from_usage("<dest> -d, --dest <destination> 'A destination directory'")
-                ),
+                .arg(Arg::from_usage("<NAME> 'A WSL distro name to register'"))
+                .arg(Arg::from_usage(
+                    "<src> -s, --src <source> 'A source .tar.gz file'",
+                ))
+                .arg(Arg::from_usage(
+                    "<dest> -d, --dest <destination> 'A destination directory'",
+                )),
         )
         .subcommand(
             SubCommand::with_name("unregister")
                 .about("Unregisters a WSL distro")
                 .usage("yowsl.exe unregister [FLAGS] <NAME>")
-                .arg(
-                    Arg::from_usage("<NAME> 'A WSL distro name to unregister'")
-                ),
+                .arg(Arg::from_usage("<NAME> 'A WSL distro name to unregister'")),
         )
         .subcommand(
             SubCommand::with_name("get-configuration")
@@ -163,16 +159,18 @@ pub fn run() {
             SubCommand::with_name("set-configuration")
                 .about("Set the configuration of a WSL distro")
                 .usage("yowsl.exe set-configuration <NAME> -d <default_uid> -f <flags>")
+                .arg(Arg::from_usage(
+                    "<NAME> 'A WSL distro name to set the configuration'",
+                ))
                 .arg(
-                    Arg::from_usage("<NAME> 'A WSL distro name to set the configuration'")
-                )
-                .arg(
-                    Arg::from_usage("<default_uid> -d, --default-uid <default_uid> 'The default Linux user ID for this WSL distro'")
-                        .validator(default_uid_validator)
+                    Arg::from_usage(
+                        "<default_uid> -d, --default-uid <default_uid>
+                         'The default Linux user ID for this WSL distro'",
+                    ).validator(default_uid_validator),
                 )
                 .arg(
                     Arg::from_usage("<flags> -f, --flags <flags> 'Flags for this WSL distro'")
-                        .validator(flags_validator)
+                        .validator(flags_validator),
                 ),
         )
         .subcommand(
@@ -180,8 +178,14 @@ pub fn run() {
                 .about("Launches a WSL process")
                 .usage("yowsl.exe launch [FLAGS] <NAME> [OPTIONS]")
                 .arg(Arg::from_usage("<NAME> 'A WSL distro name to launch'"))
-                .arg(Arg::from_usage("[command] -c, --command [command] 'Command to execute. If no command is supplied, the default shell is executed"))
-                .arg(Arg::from_usage("[use_cwd] -u, --use-cwd 'Uses the current working directory as a directory to start'"))
+                .arg(Arg::from_usage(
+                    "[command] -c, --command [command]
+                     'Command to execute. If no command is supplied, the default shell is executed",
+                ))
+                .arg(Arg::from_usage(
+                    "[use_cwd] -u, --use-cwd
+                     'Uses the current working directory as a directory to start'",
+                )),
         )
         .get_matches();
     let wslapi = match Wslapi::new() {
