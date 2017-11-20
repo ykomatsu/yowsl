@@ -12,6 +12,10 @@ maintenance = { status = "experimental" }
 [dependencies]
 bitflags = "1.0.1"
 clap = "2.27.1"
+clippy = { version = "0.0.172", optional = true }
 failure = "0.1.0"
 failure_derive = "0.1.0"
 libloading = "0.4.2"
+
+[features]
+default = []
