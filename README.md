@@ -10,6 +10,7 @@ Yet another Windows Subsystem for Linux tweaker.
 * Unregister a WSL distro
 * Get the configuration of a registered WSL distro
 * Set the configuration of a registered WSL distro
+* Launch a registered WSL distro
 
 ## Installation
 
@@ -21,7 +22,11 @@ You can download pre-built binaries from [the downloads page](https://bitbucket.
 > # To register:
 > New-Item -Name MyUbuntu -ItemType Directory
 > yowsl.exe register MyUbuntu -s install.tar.gz -d MyUbuntu
-> wslconfig.exe /setdefault MyUbuntu
+```
+
+```
+> # To launch:
+> yowsl.exe launch MyUbuntu
 ```
 
 ```
