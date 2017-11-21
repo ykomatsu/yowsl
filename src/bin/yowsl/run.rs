@@ -20,42 +20,31 @@ fn run_register(wslapi: &Wslapi, matches: &ArgMatches) {
     let src = fs::canonicalize(Path::new(src)).unwrap();
     let dest = fs::canonicalize(Path::new(dest)).unwrap();
     if current_exe.as_path().parent().unwrap() == dest {
-        match wslapi.register_distro(name, src.to_str().unwrap()) {
-            Ok(()) => {}
-            Err(e) => {
-                eprintln!("Error: {}", e);
-                return;
-            }
+        if let Err(e) = wslapi.register_distro(name, src.to_str().unwrap()) {
+            eprintln!("Error: {}", e);
         }
-    } else {
-        let new_exe = dest.join(current_exe.file_name().unwrap());
-        match fs::hard_link(current_exe.as_path(), &new_exe) {
-            Ok(()) => (),
-            Err(_) => {
-                eprintln!(
-                    "Error: I cannot create a hard link to \"{}\".",
-                    dest.to_str().unwrap()
-                );
-                return;
-            }
-        }
-        Command::new(&new_exe)
-            .args(env::args().skip(1))
-            .spawn()
-            .unwrap()
-            .wait()
-            .unwrap();
+        return;
     }
+    let new_exe = dest.join(current_exe.file_name().unwrap());
+    if fs::hard_link(current_exe.as_path(), &new_exe).is_err() {
+        eprintln!(
+            "Error: I cannot create a hard link to \"{}\".",
+            dest.to_str().unwrap()
+        );
+        return;
+    }
+    Command::new(&new_exe)
+        .args(env::args().skip(1))
+        .spawn()
+        .unwrap()
+        .wait()
+        .unwrap();
 }
 
 fn run_unregister(wslapi: &Wslapi, matches: &ArgMatches) {
     let name = matches.value_of("NAME").unwrap();
-    match wslapi.unregister_distro(name) {
-        Ok(()) => {}
-        Err(e) => {
-            eprintln!("Error: {}", e);
-            return;
-        }
+    if let Err(e) = wslapi.unregister_distro(name) {
+        eprintln!("Error: {}", e);
     }
 }
 
@@ -65,7 +54,6 @@ fn run_get_configuration(wslapi: &Wslapi, matches: &ArgMatches) {
         Ok(distro_configuration) => println!("{}", distro_configuration.to_toml()),
         Err(e) => {
             eprintln!("Error: {}", e);
-            return;
         }
     }
 }
@@ -76,12 +64,8 @@ fn run_set_configuration(wslapi: &Wslapi, matches: &ArgMatches) {
     let flags = DistroFlags::from_bits(
         u32::from_str_radix(matches.value_of("flags").unwrap(), 2).unwrap(),
     ).unwrap();
-    match wslapi.configure_distro(name, default_uid, flags) {
-        Ok(()) => {}
-        Err(e) => {
-            eprintln!("Error: {}", e);
-            return;
-        }
+    if let Err(e) = wslapi.configure_distro(name, default_uid, flags) {
+        eprintln!("Error: {}", e);
     }
 }
 
@@ -92,13 +76,9 @@ fn run_launch(wslapi: &Wslapi, matches: &ArgMatches) {
         None => "",
     };
     let use_cwd = matches.is_present("use_cwd");
-    match wslapi.launch(name, command, use_cwd) {
-        Ok(_) => {}
-        Err(e) => {
-            eprintln!("Error: {}", e);
-            return;
-        }
-    };
+    if let Err(e) = wslapi.launch(name, command, use_cwd) {
+        eprintln!("Error: {}", e);
+    }
 }
 
 #[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
@@ -149,11 +129,10 @@ pub fn run() {
         .subcommand(
             SubCommand::with_name("get-configuration")
                 .about("Get the configuration of a WSL distro")
-                .arg(
-                    Arg::with_name("NAME")
-                        .help("A WSL distro name to get the configuration")
-                        .required(true),
-                ),
+                .usage("yowsl.exe get-configuration [FLAGS] <NAME>")
+                .arg(Arg::from_usage(
+                    "<NAME> 'A WSL distro name to get the configuration'",
+                )),
         )
         .subcommand(
             SubCommand::with_name("set-configuration")

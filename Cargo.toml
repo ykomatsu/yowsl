@@ -4,6 +4,8 @@ version = "0.1.0"
 authors = ["Yoshito Komatsu <ykomatsu@akaumigame.org>"]
 description = "Yet another Windows Subsystem for Linux tweaker"
 repository = "https://bitbucket.org/ykomatsu/yowsl"
+keywords = ["cli", "windows", "wsl"]
+categories = ["command-line-utilities"]
 license = "Apache-2.0"
 
 [badges]
@@ -12,7 +14,7 @@ maintenance = { status = "experimental" }
 [dependencies]
 bitflags = "1.0.1"
 clap = "2.27.1"
-clippy = { version = "0.0.172", optional = true }
+clippy = { version = "0.0.173", optional = true }
 failure = "0.1.0"
 failure_derive = "0.1.0"
 libloading = "0.4.2"

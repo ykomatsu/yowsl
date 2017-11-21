@@ -35,7 +35,8 @@ You can download pre-built binaries from [the downloads page](https://bitbucket.
 [MyUbuntu]
 version = 1
 default_uid = 0
-distro_flags = 7 # 0b111
+flags = 7 # 0b111 -> ENABLE_INTEROP (1) | APPEND_NT_PATH (2) | ENABLE_DRIVE_MOUNTING (4)
+default_environment_values = ["HOSTTYPE=x86_64", "LANG=en_US.UTF-8", "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games", "TERM=xterm-256color"]
 ```
 
 ```
