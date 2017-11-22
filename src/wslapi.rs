@@ -29,8 +29,7 @@ type GetDistributionConfigurationFn = unsafe extern "system" fn(
 ) -> HRESULT;
 type ConfigureDistributionFn = unsafe extern "system" fn(PCWSTR, ULONG, WSL_DISTRIBUTION_FLAGS)
     -> HRESULT;
-type LaunchInteractiveFn = unsafe extern "system" fn(PCWSTR, PCWSTR, bool, *const DWORD)
-    -> HRESULT;
+type LaunchInteractiveFn = unsafe extern "system" fn(PCWSTR, PCWSTR, bool, *const DWORD) -> HRESULT;
 
 bitflags! {
     #[derive(Default)]
@@ -269,16 +268,11 @@ impl Wslapi {
         }
     }
 
-    pub fn configure_distro(
-        &self,
-        distro_name: &str,
-        default_uid: u32,
-        distro_flags: DistroFlags,
-    ) -> Result<(), Error> {
+    pub fn configure_distro(&self, distro_configuration: DistroConfiguration) -> Result<(), Error> {
         match self.raw_configure_distribution(
-            wide_chars::to_vec_u16(distro_name).as_mut_ptr(),
-            default_uid,
-            distro_flags.bits,
+            wide_chars::to_vec_u16(&distro_configuration.name[..]).as_mut_ptr(),
+            distro_configuration.default_uid,
+            distro_configuration.flags.bits,
         ) {
             Ok(0) => Ok(()),
             Ok(hresult) => Err(format_err!("HRESULT == {:#08X}", hresult)),

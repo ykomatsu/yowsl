@@ -8,6 +8,7 @@ pub fn to_vec_u16(s: &str) -> Vec<u16> {
     OsStr::new(s).encode_wide().chain(Some(0)).collect()
 }
 
+#[allow(dead_code)]
 pub unsafe fn from_vec_u16(p: *const u16) -> Result<String, Error> {
     if p.is_null() {
         return Err(failure::err_msg("p is a null"));

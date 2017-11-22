@@ -41,7 +41,7 @@ default_environment_values = ["HOSTTYPE=x86_64", "LANG=en_US.UTF-8", "PATH=/usr/
 
 ```
 > # To set the configuration:
-> yowsl.exe set-configuration MyUbuntu -u 1000 -f 111
+> yowsl.exe set-configuration MyUbuntu -u 1000
 ```
 
 ```
