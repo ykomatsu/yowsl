@@ -268,7 +268,10 @@ impl Wslapi {
         }
     }
 
-    pub fn configure_distro(&self, distro_configuration: DistroConfiguration) -> Result<(), Error> {
+    pub fn configure_distro(
+        &self,
+        distro_configuration: &DistroConfiguration,
+    ) -> Result<(), Error> {
         match self.raw_configure_distribution(
             wide_chars::to_vec_u16(&distro_configuration.name[..]).as_mut_ptr(),
             distro_configuration.default_uid,

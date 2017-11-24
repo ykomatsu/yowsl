@@ -22,7 +22,7 @@ pub fn run(wslapi: &Wslapi, matches: &ArgMatches) {
             WSL_DISTRIBUTION_FLAGS::from_str_radix(matches.value_of("flags").unwrap(), 2).unwrap(),
         ).unwrap();
     }
-    if let Err(e) = wslapi.configure_distro(distro_configuration) {
+    if let Err(e) = wslapi.configure_distro(&distro_configuration) {
         eprintln!("Error: {}", e);
     }
 }

@@ -43,25 +43,25 @@ fn run() {
         .subcommand(
             SubCommand::with_name("register")
                 .about("Registers a WSL distro")
-                .usage("yowsl.exe register [FLAGS] <NAME> -s <source> -d <destination>")
+                .usage("yowsl.exe register <NAME> -s <source> -d <destination>")
                 .arg(Arg::from_usage("<NAME> 'A WSL distro name to register'"))
                 .arg(Arg::from_usage(
-                    "<src> -s, --src <source> 'A source .tar.gz file'",
+                    "<src> -s, --src <source> 'A .tar.gz file that contains a root directory'",
                 ))
                 .arg(Arg::from_usage(
-                    "<dest> -d, --dest <destination> 'A destination directory'",
+                    "<dest> -d, --dest <destination> 'A directory to register a WSL distro'",
                 )),
         )
         .subcommand(
             SubCommand::with_name("unregister")
                 .about("Unregisters a WSL distro")
-                .usage("yowsl.exe unregister [FLAGS] <NAME>")
+                .usage("yowsl.exe unregister <NAME>")
                 .arg(Arg::from_usage("<NAME> 'A WSL distro name to unregister'")),
         )
         .subcommand(
             SubCommand::with_name("get-configuration")
                 .about("Get the configuration of a WSL distro")
-                .usage("yowsl.exe get-configuration [FLAGS] <NAME>")
+                .usage("yowsl.exe get-configuration <NAME>")
                 .arg(Arg::from_usage(
                     "<NAME> 'A WSL distro name to get the configuration'",
                 )),
@@ -69,33 +69,36 @@ fn run() {
         .subcommand(
             SubCommand::with_name("set-configuration")
                 .about("Set the configuration of a WSL distro")
-                .usage("yowsl.exe set-configuration <NAME> -d [default_uid] -f [flags]")
+                .usage("yowsl.exe set-configuration <NAME> [-d <default_uid>] [-f <flags>]")
                 .arg(Arg::from_usage(
                     "<NAME> 'A WSL distro name to set the configuration'",
                 ))
                 .arg(
                     Arg::from_usage(
-                        "[default_uid] -d, --default-uid [default_uid]
-                         'The default Linux user ID for this WSL distro'",
+                        "[default_uid] -d, --default-uid <default_uid>\
+'The default Linux user ID (number) for this WSL distro'",
                     ).validator(default_uid_validator),
                 )
                 .arg(
-                    Arg::from_usage("[flags] -f, --flags [flags] 'Flags for this WSL distro'")
-                        .validator(flags_validator),
+                    Arg::from_usage(
+                        "[flags] -f, --flags <flags>\
+'Flags (3 binary digits) for this WSL distro. 0b001: ENABLE_INTEROP, 0b010: APPEND_NT_PATH, 0b100:\
+ENABLE_DRIVE_MOUNTING'",
+                    ).validator(flags_validator),
                 ),
         )
         .subcommand(
             SubCommand::with_name("launch")
                 .about("Launches a WSL process")
-                .usage("yowsl.exe launch [FLAGS] <NAME> [OPTIONS]")
+                .usage("yowsl.exe launch <NAME> [-c <command>] [-u]")
                 .arg(Arg::from_usage("<NAME> 'A WSL distro name to launch'"))
                 .arg(Arg::from_usage(
-                    "[command] -c, --command [command]
-                     'Command to execute. If no command is supplied, the default shell is executed",
+                    "[command] -c, --command <command>\
+'Command to execute. If no command is supplied, the default shell is executed'",
                 ))
                 .arg(Arg::from_usage(
-                    "[use_cwd] -u, --use-cwd
-                     'Uses the current working directory as a directory to start'",
+                    "[use_cwd] -u, --use-cwd\
+'Uses the current working directory as a directory to start'",
                 )),
         )
         .get_matches();
