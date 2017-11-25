@@ -30,6 +30,7 @@ type GetDistributionConfigurationFn = unsafe extern "system" fn(
 type ConfigureDistributionFn = unsafe extern "system" fn(PCWSTR, ULONG, WSL_DISTRIBUTION_FLAGS)
     -> HRESULT;
 type LaunchInteractiveFn = unsafe extern "system" fn(PCWSTR, PCWSTR, bool, *const DWORD) -> HRESULT;
+type IsDistributionRegisteredFn = unsafe extern "system" fn(PCWSTR) -> bool;
 
 bitflags! {
     #[derive(Default)]
@@ -202,6 +203,12 @@ impl Wslapi {
         Ok((hresult, exit_code))
     }
 
+    fn raw_is_distribution_registered(&self, distro_name: PCWSTR) -> LibloadingResult<bool> {
+        let raw_fn: Symbol<IsDistributionRegisteredFn> =
+            unsafe { self.wslapi.get(b"WslIsDistributionRegistered\0")? };
+        Ok(unsafe { raw_fn(distro_name) })
+    }
+
     pub fn register_distro(&self, distro_name: &str, tar_gz_filename: &str) -> Result<(), Error> {
         match self.raw_register_distribution(
             wide_chars::to_vec_u16(distro_name).as_mut_ptr(),
@@ -292,6 +299,14 @@ impl Wslapi {
             Ok((0, exit_code)) => Ok(exit_code),
             Ok((hresult, _)) => Err(format_err!("HRESULT == {:#08X}", hresult)),
             Err(e) => Err(format_err!("Wslapi::launch {}", e)),
+        }
+    }
+
+    pub fn is_distribution_registered(&self, distro_name: &str) -> Result<bool, Error> {
+        match self.raw_is_distribution_registered(wide_chars::to_vec_u16(distro_name).as_mut_ptr())
+        {
+            Ok(result) => Ok(result),
+            Err(e) => Err(format_err!("Wslapi::is_distribution_registered {}", e)),
         }
     }
 }

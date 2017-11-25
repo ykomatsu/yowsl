@@ -29,7 +29,7 @@ YoWSL enables you to register a WSL distro in an arbitrary folder using your
 
 * A `.tar.gz` archive that contains all files using a WSL distro. If you
   installed some WSL distro from the Microsoft Store, you may find some
-  `install.tar.gz` archive in `C:\\Program Files\\WindowsApps` folder
+  `install.tar.gz` archive in `C:\Program Files\WindowsApps` folder
 
 ## Pre-built binaries
 
@@ -50,7 +50,6 @@ with [Cargo](https://crates.io/):
 
 ```
 > # To register:
-> New-Item -Name MyUbuntu -ItemType Directory
 > yowsl.exe register MyUbuntu -s install.tar.gz -d MyUbuntu
 ```
 
@@ -78,6 +77,10 @@ default_environment_values = ["HOSTTYPE=x86_64", "LANG=en_US.UTF-8", "PATH=/usr/
 > # To unregister:
 > yowsl.exe unregister MyUbuntu
 ```
+
+## References
+
+* [Windows Subsystem for Linux (Windows)](https://msdn.microsoft.com/en-us/library/windows/desktop/mt811415(v=vs.85).aspx)
 
 ## License
 
