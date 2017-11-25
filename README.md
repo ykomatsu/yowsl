@@ -35,7 +35,7 @@ YoWSL enables you to register a WSL distro in an arbitrary folder using your
 
 You can download pre-built binaries from
 [the downloads page](https://bitbucket.org/ykomatsu/yowsl/downloads).
-You will need to extract a `.zip` file and put `yowsl.exe` in your paths.
+You will need to extract a `.zip` archive and put `yowsl.exe` in your paths.
 
 ## Building
 

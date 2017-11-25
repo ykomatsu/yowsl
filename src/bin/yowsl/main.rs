@@ -47,7 +47,7 @@ fn run() {
                 .arg(Arg::from_usage("<NAME> 'A WSL distro name to register'"))
                 .arg(Arg::from_usage(
                     "<src> -s, --src <source>\
-'A .tar.gz file that contains all files using a WSL distro'",
+'A .tar.gz archive that contains all files using a WSL distro'",
                 ))
                 .arg(Arg::from_usage(
                     "<dest> -d, --dest <destination> 'A folder to register a WSL distro'",
