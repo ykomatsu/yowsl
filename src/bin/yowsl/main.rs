@@ -46,10 +46,11 @@ fn run() {
                 .usage("yowsl.exe register <NAME> -s <source> -d <destination>")
                 .arg(Arg::from_usage("<NAME> 'A WSL distro name to register'"))
                 .arg(Arg::from_usage(
-                    "<src> -s, --src <source> 'A .tar.gz file that contains a root directory'",
+                    "<src> -s, --src <source>\
+'A .tar.gz file that contains all files using a WSL distro'",
                 ))
                 .arg(Arg::from_usage(
-                    "<dest> -d, --dest <destination> 'A directory to register a WSL distro'",
+                    "<dest> -d, --dest <destination> 'A folder to register a WSL distro'",
                 )),
         )
         .subcommand(
