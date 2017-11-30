@@ -61,7 +61,7 @@ fn run() {
         )
         .subcommand(
             SubCommand::with_name("get-configuration")
-                .about("Get the configuration of a WSL distro")
+                .about("Gets the configuration of a WSL distro and prints it as TOML")
                 .usage("yowsl.exe get-configuration <NAME>")
                 .arg(Arg::from_usage(
                     "<NAME> 'A WSL distro name to get the configuration'",
@@ -69,7 +69,7 @@ fn run() {
         )
         .subcommand(
             SubCommand::with_name("set-configuration")
-                .about("Set the configuration of a WSL distro")
+                .about("Sets the configuration of a WSL distro")
                 .usage("yowsl.exe set-configuration <NAME> [-d <default_uid>] [-f <flags>]")
                 .arg(Arg::from_usage(
                     "<NAME> 'A WSL distro name to set the configuration'",
@@ -82,9 +82,7 @@ fn run() {
                 )
                 .arg(
                     Arg::from_usage(
-                        "[flags] -f, --flags <flags>\
-'Flags (3 binary digits) for this WSL distro. 0b001: ENABLE_INTEROP, 0b010: APPEND_NT_PATH, 0b100:\
-ENABLE_DRIVE_MOUNTING'",
+                        "[flags] -f, --flags <flags> 'Flags (3 binary digits) for this WSL distro'",
                     ).validator(flags_validator),
                 ),
         )

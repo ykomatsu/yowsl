@@ -1,8 +1,9 @@
 [package]
 name = "yowsl"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Yoshito Komatsu <ykomatsu@akaumigame.org>"]
 description = "Yet another Windows Subsystem for Linux tweaker"
+homepage = "https://yowsl.akaumiga.me/"
 repository = "https://bitbucket.org/ykomatsu/yowsl"
 readme = "README.md"
 keywords = ["cli", "windows", "wsl"]
@@ -14,7 +15,6 @@ maintenance = { status = "experimental" }
 
 [dependencies]
 bitflags = "1.0.1"
-clap = "2.27.1"
+clap = "2.28.0"
 failure = "0.1.0"
-failure_derive = "0.1.0"
 libloading = "0.4.2"

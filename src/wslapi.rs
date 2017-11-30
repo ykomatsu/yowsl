@@ -76,14 +76,16 @@ impl DistroConfiguration {
             "[{}]
 version = {}
 default_uid = {}
-flags = {} # {:#03b} -> {}
+# flags: {:#03b}
+# {}
+flags = {}
 default_environment_values = [{}]",
             self.name,
             self.version,
             self.default_uid,
             flags_bits,
-            flags_bits,
             self.flags,
+            flags_bits,
             &self.default_environment_variables[..].join(", ")
         )
     }

@@ -33,7 +33,7 @@ pub fn run(wslapi: &Wslapi, matches: &ArgMatches) {
             return;
         }
     }
-    if !Path::new(dest).is_dir() {
+    if !dest.is_dir() {
         eprintln!("\"{}\" is not a folder", dest.to_str().unwrap());
         return;
     }
@@ -47,6 +47,13 @@ pub fn run(wslapi: &Wslapi, matches: &ArgMatches) {
         return;
     }
     let new_exe = dest.join(current_exe.file_name().unwrap());
+    if new_exe.exists() {
+        eprintln!(
+            "\"{}\" already exists. Please remove it first",
+            new_exe.to_str().unwrap()
+        );
+        return;
+    }
     if let Err(e) = fs::hard_link(current_exe.as_path(), &new_exe) {
         eprintln!(
             "I cannot create a hard link to \"{}\"\nError: {}",
