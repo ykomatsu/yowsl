@@ -19,7 +19,7 @@ YoWSL enables you to register a WSL distro in an arbitrary folder using your
 
 ## Prerequisites
 
-* The Windows 10 Fall Creators Update
+* The Windows 10 Fall Creators Update (x64)
 * The Windows Subsystem for Linux optional feature. You can install it in
   PowerShell as Administrator:
 

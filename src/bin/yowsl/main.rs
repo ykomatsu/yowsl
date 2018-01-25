@@ -61,18 +61,18 @@ fn run() {
         )
         .subcommand(
             SubCommand::with_name("get-configuration")
-                .about("Gets the configuration of a WSL distro and prints it as TOML")
+                .about("Gets a configuration of a WSL distro and prints it as TOML")
                 .usage("yowsl.exe get-configuration <NAME>")
                 .arg(Arg::from_usage(
-                    "<NAME> 'A WSL distro name to get the configuration'",
+                    "<NAME> 'A WSL distro name to get a configuration'",
                 )),
         )
         .subcommand(
             SubCommand::with_name("set-configuration")
-                .about("Sets the configuration of a WSL distro")
+                .about("Sets a configuration of a WSL distro")
                 .usage("yowsl.exe set-configuration <NAME> [-d <default_uid>] [-f <flags>]")
                 .arg(Arg::from_usage(
-                    "<NAME> 'A WSL distro name to set the configuration'",
+                    "<NAME> 'A WSL distro name to set a configuration'",
                 ))
                 .arg(
                     Arg::from_usage(
